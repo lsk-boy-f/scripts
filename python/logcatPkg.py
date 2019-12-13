@@ -42,7 +42,7 @@ def print_package_log(device_to_print, package_name):
             filters = filters + "|" + pid
             # print 'command = %s;filters=%s'%(command, filters)
     if filters != '':
-        cmd = 'adb -s %s logcat -v time | grep --color=always -E "%s" ' % (device_to_print, filters)
+        cmd = 'adb -s %s logcat -v color | grep --color=always -E "%s" ' % (device_to_print, filters)
         os.system(cmd)
 
 
