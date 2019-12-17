@@ -6,25 +6,12 @@
 import os
 import sys
 
+import adb
+
 if len(sys.argv) < 2:
     exit("Please input package name as first argument")
 
 packageName = str(sys.argv[1])
-
-
-def get_device_id():
-    device_list = []
-    command = "adb devices -l | sed '1d'| awk '{print $1}'"
-    result = os.popen(command)
-    device_id = result.readline().strip()
-    if device_id != "":
-        device_list.append(device_id)
-
-    while device_id != "":
-        device_id = result.readline().strip()
-        if device_id != "":
-            device_list.append(device_id)
-    return device_list
 
 
 def print_package_log(device_to_print, package_name):
@@ -46,7 +33,7 @@ def print_package_log(device_to_print, package_name):
         os.system(cmd)
 
 
-devices = get_device_id()
+devices = adb.get_device_id_list()
 devicesNum = len(devices)
 
 if devicesNum < 1:
