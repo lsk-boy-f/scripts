@@ -1,22 +1,14 @@
 #!/usr/bin/env python
 # coding:utf-8
-import os
 import sys
 import adb
+from adb import start_activity
 
 if len(sys.argv) < 3:
     exit("Please input package name and activity name")
 
 packageName = str(sys.argv[1])
 activityName = str(sys.argv[2])
-
-
-def start_activity(device_id, package_name, activity_name):
-    # print device, packageName
-    print("Got device: " + device_id)
-    command = "adb -s %s shell am start %s/%s" % (device_id, package_name, activity_name)
-    os.system(command)
-
 
 devices = adb.get_device_id_list()
 devicesNum = len(devices)
