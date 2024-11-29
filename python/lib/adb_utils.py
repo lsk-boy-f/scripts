@@ -31,17 +31,19 @@ def get_current_package_name(device):
 
 def start_app(device, package_name):
     start_component = find_start_component(device, package_name)
-    print(f"Start component: {start_component}")
-    # start app
-    print(f"Start app on device: {device}")
-    os.system(
-        f"""adb -s {device} shell am start -n "{start_component}" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER""")
+    if start_component:
+        print(f"Start component: {start_component}")
+        # start app
+        print(f"Start app on device: {device}")
+        os.system(
+            f"""adb -s {device} shell am start -n "{start_component}" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER""")
 
 # 查找启动组件
 
 
 def find_start_component(device, package_name):
     command = f"""adb -s {device} shell pm dump {package_name} |  grep -B 1 "android.intent.action.MAIN\\"" | grep {package_name}"""
+    # print(command)
     out = os.popen(command).read().strip()
     component_list = []
     for line in out.splitlines():
@@ -49,6 +51,9 @@ def find_start_component(device, package_name):
         for item in line.split(" "):
             if package_name in item:
                 component_list.append(item)
+    if not component_list:
+        print("未找到启动组件")
+        return None
     if len(component_list) == 1:
         return component_list[0]
     else:
