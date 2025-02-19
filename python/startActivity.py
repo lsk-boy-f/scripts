@@ -16,12 +16,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     devices = get_connected_devices()
+    device = args.device
     if not devices:
         print("未检测到连接的设备，请检查 adb 连接。")
         exit(1)
 
     # 如果没有指定设备，交互选择
-    if not args.device:
+    if not device:
         if len(devices) > 1:
             device = select_device(devices)
         else:
@@ -37,4 +38,4 @@ if __name__ == "__main__":
         print(f"请指定Activity")
         exit(1)
 
-    start_activity(args.device, args.package, args.activity)
+    start_activity(device, args.package, args.activity)
