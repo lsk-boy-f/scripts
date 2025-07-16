@@ -75,6 +75,7 @@ def monitor_logs(process_name, device):
         process_name, device, pid_list), daemon=True)
     refresh_thread.start()
 
+    logcat_process = None
     try:
         print(f"开始监控设备 {device} 上包名为 '{process_name}' 的日志...")
         logcat_process = subprocess.Popen(
@@ -92,12 +93,21 @@ def monitor_logs(process_name, device):
         #         print(line.strip())
 
         while True:
-            for line in iter(logcat_process.stdout.readline, ''):
-                if any(f"{pid}" in line for pid in pid_list):
-                    print(line.strip())
+            # 检查 device 是否仍然连接
+            if not subprocess.run(["adb", "-s", device, "get-state"], capture_output=True, text=True).stdout.strip() == "device":
+                print(f"设备 {device} 已断开连接，停止日志监控...")
+                break
+            if logcat_process.stdout is not None:
+                for line in iter(logcat_process.stdout.readline, ''):
+                    if any(f"{pid}" in line for pid in pid_list):
+                        print(line.strip())
+            else:
+                print("logcat_process.stdout is None, 无法读取日志输出。")
+                break
     except KeyboardInterrupt:
         print("停止日志监控...")
-        logcat_process.terminate()
+        if logcat_process is not None:
+            logcat_process.terminate()
     except Exception as e:
         print(f"日志监控时发生错误: {e}")
 
